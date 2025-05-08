@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TweetService {
+    List<Tweet> findAll();
+    Tweet findById(Long id);
+    List<Tweet> findByUserId(Long userid);
+    List<Tweet> findAllByUsername(String username);
+    Tweet save(Tweet tweet);
+    Tweet replaceOrCreate(Long id, Tweet tweet);
+    Tweet update(Long tweetId, Tweet tweet);
+    void delete(Long id);
 
-    Tweet createTweet(String content, User user);
-    List<Tweet> findByUserId(Long userId);
-    Optional<Tweet> findById(Long id);
-    Tweet updateTweet(Long id, String content, User currentUser);
-    void deleteTweet(Long id, User currentUser);
 }

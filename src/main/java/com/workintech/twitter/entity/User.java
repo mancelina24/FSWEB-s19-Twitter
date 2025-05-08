@@ -5,22 +5,25 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
-@Table(name="users", schema = "twitter")
-public class User {
+@Table(name="user", schema = "twitter")
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
@@ -32,13 +35,14 @@ public class User {
     private String username;
 
     @NotBlank(message = "Şifre boş olamaz.")
-    @Size(min = 6, message = "Şifre en az 6 karakter olmalıdır.")
+   // @Size(max = 20, message = "Şifre max 20 karakter olmalıdır.")
     @Column(name="password")
     private String password;
 
     @NotNull
     @NotBlank
     @Email(message = "Geçerli bir e-posta adresi giriniz.")
+    @Size(max = 50, message = "Şifre max 50 karakter olmalıdır.")
     @Column(name = "email", unique = true)
     private String email;
 
@@ -58,4 +62,71 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Retweet> retweets;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            schema = "Twitter",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getAuthority()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;  // Spring Security giriş için
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    // kullanıcı adı gibi davranacak başka bir getter
+    public String getUserNameField() {
+        return username; // DTO için kullanılabilir
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+        if(obj==null || obj.getClass() != this.getClass())
+            return false;
+        User user=(User) obj;
+        return  user.getId().equals(this.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.id);
+    }
 }

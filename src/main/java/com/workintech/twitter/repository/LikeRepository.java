@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
+
     Optional<Like> findByTweetIdAndUserId(Long tweetId, Long userId);
+    boolean existsByUserIdAndTweetId(Long userId, Long tweetId);
 }

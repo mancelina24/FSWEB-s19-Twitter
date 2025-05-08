@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 
 @AllArgsConstructor
@@ -34,11 +35,10 @@ public class Tweet {
     private String content;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime created_at;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,4 +53,20 @@ public class Tweet {
 
     @OneToMany(mappedBy = "tweet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Retweet> retweets;
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+        if(obj==null || obj.getClass() != this.getClass())
+            return false;
+        Tweet tweet=(Tweet) obj;
+        return  tweet.getId().equals(this.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.id);
+    }
+
 }

@@ -9,6 +9,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+//Tweet: Bu repository'nin yönetmekle sorumlu olduğu Entity sınıfıdır.
+//Long: Bu entity'nin primary key (id) alanının veri tipidir.
 public interface TweetRepository extends JpaRepository<Tweet, Long> {
-    List<Tweet> findByUserId(Long userId);
+
+    @Query("SELECT t FROM Tweet t WHERE t.user.username = :username")
+    List<Tweet> findAllByUsername(@Param("username") String username);
+
+    @Query("SELECT t FROM Tweet t WHERE t.user.id = :userId")
+    List<Tweet> findByUserId(@Param("userId") Long userId);
 }

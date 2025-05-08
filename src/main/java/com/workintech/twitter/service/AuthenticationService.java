@@ -2,15 +2,19 @@ package com.workintech.twitter.service;
 
 import com.workintech.twitter.entity.Role;
 import com.workintech.twitter.entity.User;
+import com.workintech.twitter.exception.TwitterException;
 import com.workintech.twitter.repository.RoleRepository;
 import com.workintech.twitter.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+@Service
 public class AuthenticationService {
 
     private UserRepository userRepository;
@@ -23,30 +27,27 @@ public class AuthenticationService {
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
-    public User register (String email, String password,String username){
-        Optional<User> optionalUser=userRepository.findByEmail(email);
-        if(optionalUser.isPresent()){
-            throw new RuntimeException("Username already exist");
-        }
-        String encodedPassword=passwordEncoder.encode(password);
-        Optional<Role> optionalRole=roleRepository.findByAuthority("USER");
-        List<Role> roles=new ArrayList<>();
-
-        if(optionalRole.isPresent()){
-            Role userRole=optionalRole.get();
-            roles.add(userRole);
-        } else {
-            throw new RuntimeException("There is not this role in role table");
+    @Transactional
+    public User register (String email, String password, String username){
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new TwitterException("E-posta zaten kayıtlı.", HttpStatus.BAD_REQUEST);
         }
 
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new TwitterException("Kullanıcı adı zaten kayıtlı.", HttpStatus.BAD_REQUEST);
+        }
 
-        User user=new User();
+        String encodedPassword = passwordEncoder.encode(password);
+        Role userRole = roleRepository.findByAuthority("USER")
+                .orElseThrow(() -> new TwitterException("Sistemde 'USER' rolü bulunamadı.", HttpStatus.INTERNAL_SERVER_ERROR));
+
+        User user = new User();
         user.setEmail(email);
         user.setPassword(encodedPassword);
         user.setUsername(username);
-        //user.setRoles(roles);
-        return userRepository.save(user);
+        user.getRoles().add(userRole);
 
+        return userRepository.save(user);
     }
+
 }

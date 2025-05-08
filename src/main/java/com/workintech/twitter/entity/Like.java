@@ -22,7 +22,7 @@ public class Like {
     private Long id;
 
     @CreationTimestamp
-    @Column(name="created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

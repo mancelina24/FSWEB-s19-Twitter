@@ -3,12 +3,16 @@ package com.workintech.twitter.service;
 import com.workintech.twitter.entity.Comment;
 import com.workintech.twitter.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CommentService {
 
-    Comment createComment(String text, Long tweetId, User user);
-    Optional<Comment> findById(Long id);
-    Comment updateComment(Long id, String text, User currentUser);
-    void deleteComment(Long id, User currentUser, Long tweetOwnerId);
+    Comment save(Comment comment);
+    Comment findById(Long id);
+    List<Comment> findAll();
+    List<Comment> findByTweetId(Long tweetId);
+    List<Comment> findByUserId(Long userId);
+    Comment update(Long id, Comment comment);
+    void delete(Long id);
 }

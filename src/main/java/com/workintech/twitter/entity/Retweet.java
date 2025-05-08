@@ -22,7 +22,7 @@ public class Retweet {
     private Long id;
 
     @CreationTimestamp
-    @Column(name = "retweeted_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime retweetedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
