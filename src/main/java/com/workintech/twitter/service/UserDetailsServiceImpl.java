@@ -30,8 +30,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     // Spring Security için gerekli override
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException { //loadUserByUsername() metodu, kullanıcıyı veritabanında arar.
+        return userRepository.findByEmail(username) // bizde bu alan aslında username -> email (User entityde getUsername email olarak tanımlandı
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found via given email: " + username));
     }
 }

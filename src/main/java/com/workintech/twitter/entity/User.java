@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name="user", schema = "twitter")
 public class User implements UserDetails {

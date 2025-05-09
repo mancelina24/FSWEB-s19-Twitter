@@ -24,10 +24,21 @@ import org.springframework.security.web.SecurityFilterChain;
 
 public class SecurityConfig {
 
+
+    /*    Bu demek oluyor ki:
+    BCryptPasswordEncoder sınıfından bir nesne üretiliyor
+    Bu nesne Spring context’e bir bean olarak ekleniyor
+    Artık bu nesneyi her yerde kullanabilirsin:*/
 @Bean
     public PasswordEncoder passwordEncoder(){
     return new BCryptPasswordEncoder();
 }
+
+
+/*    Bu yapı sayesinde:
+    Bir AuthenticationManager nesnesi üretip Spring'e veriyorsun.
+    Bu yapı Spring Security'nin kimlik doğrulamada kullanacağı asıl mekanizmayı oluşturuyor.
+    Spring başka yerlerde AuthenticationManager'a ihtiyaç duyarsa, bu tanımlanan yapı kullanılacak.*/
 
 @Bean
     public AuthenticationManager authManager(UserDetailsService userDetailsService){
@@ -55,7 +66,7 @@ public class SecurityConfig {
                 auth.requestMatchers(HttpMethod.DELETE,"/account").hasAuthority("ADMIN");
                 auth.anyRequest().authenticated();
             })
-            //.formLogin(Customizer.withDefaults())//Login olma için mevcut arayüz var onu kullanmak istiyorsan
+            .formLogin(Customizer.withDefaults())//Login olma için mevcut arayüz var onu kullanmak istiyorsan
             .httpBasic(Customizer.withDefaults())
             .build();
 }
