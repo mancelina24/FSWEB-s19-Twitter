@@ -22,10 +22,9 @@ public class AuthenticationService {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
 
-
-
     @Transactional
     public User register (String email, String password, String username){
+        //bu email sistemde var mı kontrol edelim
         if (userRepository.findByEmail(email).isPresent()) {
             throw new TwitterException("E-posta zaten kayıtlı.", HttpStatus.CONFLICT);
         }

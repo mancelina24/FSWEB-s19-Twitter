@@ -1,38 +1,25 @@
 package com.workintech.twitter.service;
-
-import com.workintech.twitter.entity.User;
-import com.workintech.twitter.exception.TwitterException;
 import com.workintech.twitter.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-
+    @Autowired
     private final UserRepository userRepository;
 
-    @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository) {
 
-        this.userRepository = userRepository;
-    }
-
-
-    // Spring Security için gerekli override
+    // Spring Security için zorunlu override
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException { //loadUserByUsername() metodu, kullanıcıyı veritabanında arar.
         return userRepository.findByEmail(username) // bizde bu alan aslında username -> email (User entityde getUsername email olarak tanımlandı
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found via given email: " + username));
+                        new UsernameNotFoundException("User not found via given email: " + username)); //UsernameNotFoundException tanımlı bir exception
     }
 }

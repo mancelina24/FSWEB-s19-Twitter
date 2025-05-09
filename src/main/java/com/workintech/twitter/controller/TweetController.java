@@ -33,6 +33,7 @@ public class TweetController {
         return tweetService.findAll();
     }
 
+
   // 1. Tweeti ID ile bulma
     @GetMapping("/{id}")
     public Tweet getTweetById(@Positive @PathVariable Long id){
@@ -52,7 +53,7 @@ public class TweetController {
         return tweetService.findAllByUsername(username);
     }
     // 4. Tweet oluşturma
-    @PostMapping
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public Tweet createTweet(@RequestBody Tweet tweet){
         return tweetService.save(tweet);

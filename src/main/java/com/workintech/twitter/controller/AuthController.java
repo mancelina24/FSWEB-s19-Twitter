@@ -33,13 +33,13 @@ public class AuthController {
 
     // Kullanıcı kaydını gerçekleştiriyoruz
     @PostMapping("/register")
-    public RegisterResponseDto register(@Validated @RequestBody RegisterRequestDto userDto) {
+    public RegisterResponseDto register(@Validated @RequestBody RegisterRequestDto registerDto) {
         User user = authenticationService.register(
-                userDto.getEmail(),
-                userDto.getPassword(),
-                userDto.getUsername());
+                registerDto.getEmail(),
+                registerDto.getPassword(),
+                registerDto.getUsername());
 
-        return new RegisterResponseDto(userDto.getEmail(), "User registration successful.");
+        return new RegisterResponseDto(registerDto.getEmail(), "User registration successful.");
         //user.getEmail() de yazabilirdin.
     }
 
