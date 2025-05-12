@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface CommentService {
 
-    Comment save(Comment comment);
+    Comment save(Comment comment,long tweetId, User user);
     Comment findById(Long id);
     List<Comment> findAll();
     List<Comment> findByTweetId(Long tweetId);
     List<Comment> findByUserId(Long userId);
-    Comment update(Long id, Comment comment);
+    Comment update(Long id, Comment comment,long tweetId, User user);
     void delete(Long id);
 }

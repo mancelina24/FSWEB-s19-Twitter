@@ -46,27 +46,18 @@ public class LikesServiceImpl implements LikeService{
     public void unlikeTweet(Long tweetId, User user) {
     Like like=findByTweetIdAndUserId(tweetId,user.getId())
             .orElseThrow(()->new TwitterException("Like not found for tweet and user", HttpStatus.NOT_FOUND));
+        likeRepository.delete(like);
     }
 
     @Override
     public boolean existsByUserIdAndTweetId(Long userId, Long tweetId) {
-        return likeRepository.existsByUserIdAndTweetId(userId,tweetId);
+        return likeRepository.existsByUserIdAndTweetId(userId, tweetId);
     }
 
     @Override
     public Optional<Like> findByTweetIdAndUserId(Long tweetId, Long userId) {
-        return Optional.empty();
+        return likeRepository.findByTweetIdAndUserId(tweetId, userId);
     }
 
-    @Override
-    public List<Like> findAll() {
-        return likeRepository.findAll();
-    }
 
-    @Override
-    public Like findById(Long id) {
-        return likeRepository.findById(id)
-                .orElseThrow(()->new TwitterException("Like not found with id: " + id, HttpStatus.NOT_FOUND));
-
-    }
 }

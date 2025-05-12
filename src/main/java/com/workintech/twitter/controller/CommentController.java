@@ -26,7 +26,16 @@ public class CommentController {
     @PostMapping("/{tweetId}")
     @ResponseStatus(HttpStatus.CREATED)
     public Comment addComment(@PathVariable Long tweetId, @RequestBody Comment comment, @AuthenticationPrincipal User user){
-        return commentService.save(comment);
+        return commentService.save(comment, tweetId, user);
+    }
+
+    @PutMapping("/{commentId}/tweet/{tweetId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Comment updateComment(@PathVariable Long commentId,
+                                 @PathVariable Long tweetId,
+                                 @RequestBody Comment comment,
+                                 @AuthenticationPrincipal User user) {
+        return commentService.update(commentId, comment, tweetId, user);
     }
 
     @GetMapping("/tweet/{tweetId}")

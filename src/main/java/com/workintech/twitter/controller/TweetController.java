@@ -60,14 +60,14 @@ public class TweetController {
     }
 
     // 5. Tweet güncelleme
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public Tweet updateTweet(@PathVariable Long id, @RequestBody Tweet tweet){
 
         return tweetService.update(id, tweet);
     }
 
     // 6. Tweet silme
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)//204 status
     public void deleteTweet(@Positive @PathVariable("id") Long id){ //JSON, Json convert
         tweetService.delete(id);

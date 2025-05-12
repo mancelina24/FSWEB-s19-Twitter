@@ -123,7 +123,9 @@ public class User implements UserDetails {
         if(obj==null || obj.getClass() != this.getClass())
             return false;
         User user=(User) obj;
-        return  user.getId().equals(this.id);
+        // Güvenli null kontrolü
+        return this.id != null && this.id.equals(user.getId());
+
     }
 
     @Override

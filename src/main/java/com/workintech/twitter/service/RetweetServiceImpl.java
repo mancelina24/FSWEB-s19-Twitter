@@ -5,6 +5,7 @@ import com.workintech.twitter.entity.Tweet;
 import com.workintech.twitter.entity.User;
 import com.workintech.twitter.exception.TwitterException;
 import com.workintech.twitter.repository.RetweetRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,12 +40,12 @@ public class RetweetServiceImpl implements RetweetService {
             retweet.setTweet(tweet);
             retweet.setUser(user);
             retweet.setRetweetedAt(LocalDateTime.now());
-
+        retweetRepository.save(retweet);
         }
-
+    @Transactional
     @Override
     public void undoRetweet(Long tweetId, User user) {
-
+        retweetRepository.deleteByUserIdAndTweetId(user.getId(), tweetId);
     }
 
     @Override

@@ -26,11 +26,12 @@ public class RetweetController {
         retweetService.retweet(tweetId, user);
     }
 
-    @DeleteMapping("/{tweetId}")
+    @DeleteMapping("/undo/{tweetId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void undoRetweet(@PathVariable Long tweetId,
                             @AuthenticationPrincipal User user) {
         retweetService.undoRetweet(tweetId, user);
     }
+
 
 }

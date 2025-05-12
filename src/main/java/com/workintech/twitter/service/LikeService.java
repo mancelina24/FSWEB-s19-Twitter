@@ -12,6 +12,6 @@ public interface LikeService {
     void unlikeTweet(Long tweetId, User user);
     boolean existsByUserIdAndTweetId(Long userId, Long tweetId);
     Optional<Like> findByTweetIdAndUserId(Long tweetId, Long userId);
-    List<Like> findAll();
-    Like findById(Long id);
+    //List<Like> findAll();
+    //Like findById(Long id);
 }

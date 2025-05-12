@@ -19,16 +19,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
+
     private AuthenticationService authenticationService;
     private UserDetailsService userDetailsService;
     private AuthenticationManager authenticationManager;
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public AuthController(AuthenticationService authenticationService, UserDetailsService userDetailsService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+        this.authenticationService = authenticationService;
+        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
+    }
+
 
 
     // Kullanıcı kaydını gerçekleştiriyoruz
