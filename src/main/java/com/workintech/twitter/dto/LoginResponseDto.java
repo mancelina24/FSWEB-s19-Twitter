@@ -1,4 +1,5 @@
 package com.workintech.twitter.dto;
 
-public record LoginResponseDto(String message) {
-}
+import com.workintech.twitter.entity.User;
+
+public record LoginResponseDto(String message, User user) {}

@@ -66,7 +66,7 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
-            schema = "Twitter",
+            schema = "twitter",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
@@ -102,7 +102,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;  // Spring Security giriş için
+        return this.email;  // Spring Security giriş için
     }
 
     @Override

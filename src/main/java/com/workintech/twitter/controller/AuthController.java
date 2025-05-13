@@ -6,7 +6,9 @@ import com.workintech.twitter.dto.RegisterResponseDto;
 import com.workintech.twitter.dto.RegisterRequestDto;
 import com.workintech.twitter.entity.User;
 import com.workintech.twitter.service.AuthenticationService;
+
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,20 +27,18 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
 
-    private AuthenticationService authenticationService;
-    private UserDetailsService userDetailsService;
-    private AuthenticationManager authenticationManager;
-    private PasswordEncoder passwordEncoder;
+    private final AuthenticationService authenticationService;
+    private final UserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public AuthController(AuthenticationService authenticationService, UserDetailsService userDetailsService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+    public AuthController( AuthenticationService authenticationService, UserDetailsService userDetailsService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+
         this.authenticationService = authenticationService;
         this.userDetailsService = userDetailsService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
     }
-
-
 
     // Kullanıcı kaydını gerçekleştiriyoruz
     @PostMapping("/register")
@@ -52,13 +52,12 @@ public class AuthController {
         //user.getEmail() de yazabilirdin.
     }
 
+
     // Kullanıcı giriş işlemi yapar
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginDto){
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginDto) {
         try {
-            // Kullanıcıyı veritabanından alıyoruz
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.email());
 
             // AuthenticationManager üzerinden kimlik doğrulaması yapıyoruz
             Authentication authentication = authenticationManager.authenticate(
@@ -68,19 +67,22 @@ public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto login
                     )
             );
 
-            // Eğer şifre doğruysa, başarılı giriş mesajı döndürüyoruz
-            if (passwordEncoder.matches(loginDto.password(), userDetails.getPassword())) {
+            // Authentication başarılıysa, kullanıcı detaylarını al
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
 
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(new LoginResponseDto("Login successful: " + loginDto.email()));
-            }
+            // Kullanıcıyı DB'den al (dilersen DTO'ya eklemek için)
+            User user = authenticationService.getUserByEmail(loginDto.email());
+
+            // Giriş başarılı, token ve user dön
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new LoginResponseDto("Login successful", user));
+
         } catch (Exception e) {
-            // Eğer kimlik doğrulama hatalıysa, hata mesajı dönüyoruz
+            System.out.println("Login hatası: " + e.getMessage());
+            e.printStackTrace(); // Hatanın ne olduğunu logla
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponseDto("Invalid credentials"));
+                    .body(new LoginResponseDto("Invalid credentials", null));
         }
-
-        return null; // Hata durumu için null dönüyoruz (burada geliştirme yapılabilir)
     }
 }

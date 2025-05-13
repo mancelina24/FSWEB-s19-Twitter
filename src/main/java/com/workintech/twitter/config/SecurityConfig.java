@@ -1,8 +1,5 @@
 package com.workintech.twitter.config;
 
-
-import com.workintech.twitter.service.UserDetailsServiceImpl;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,21 +11,32 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 
 public class SecurityConfig {
 
+    private  final UserDetailsService userDetailsService;
+
+
+
+    @Autowired
+    public SecurityConfig(UserDetailsService userDetailsService ) {
+        this.userDetailsService = userDetailsService;
+
+    }
 
     /*    Bu demek oluyor ki:
-    BCryptPasswordEncoder sınıfından bir nesne üretiliyor
-    Bu nesne Spring context’e bir bean olarak ekleniyor
-    Artık bu nesneyi her yerde kullanabilirsin:*/
+        BCryptPasswordEncoder sınıfından bir nesne üretiliyor
+        Bu nesne Spring context’e bir bean olarak ekleniyor
+        Artık bu nesneyi her yerde kullanabilirsin:*/
 @Bean
     public PasswordEncoder passwordEncoder(){
     return new BCryptPasswordEncoder();
@@ -56,11 +64,12 @@ public class SecurityConfig {
             .csrf(csrf->csrf.disable())//farklı domainlerden istek atmamızı engelliyor o
             // yüzden disable yapıyoruz
             //kısa hali  csrf.(AbstractHttpConfigurer::disable);
-            .cors(Customizer.withDefaults())
+            .cors(Customizer.withDefaults())            // CORS ayarlarını yapıyoruz
             .authorizeHttpRequests(auth->{
                 auth.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();
                 auth.requestMatchers(HttpMethod.GET,"/users/**").permitAll();
                 auth.requestMatchers(HttpMethod.GET,"/tweet/**").permitAll();
+                auth.requestMatchers(HttpMethod.POST,"/tweet/**").permitAll();
 /*               auth.requestMatchers(HttpMethod.GET,"/account").hasAuthority("ADMIN");
                 auth.requestMatchers(HttpMethod.GET, "/account/{id}").hasAnyAuthority("ADMIN", "USER");
                 //auth.requestMatchers(HttpMethod.GET,"/account/{id}").hasAuthority("ADMIN");
@@ -70,8 +79,9 @@ public class SecurityConfig {
                 auth.requestMatchers(HttpMethod.DELETE,"/account").hasAuthority("ADMIN");*/
                 auth.anyRequest().authenticated();
             })
-            //.formLogin(Customizer.withDefaults())//Login olma için mevcut arayüz var onu kullanmak istiyorsan
-            .httpBasic(Customizer.withDefaults())//nereden login yapabileceğimiz gösteriyor
+            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .formLogin(Customizer.withDefaults())//Login olma için mevcut arayüz var onu kullanmak istiyorsan
+            .httpBasic(Customizer.withDefaults())//nereden login yapabileceğimiz gösteriyor // HTTP Basic Auth
             .build();
 }
 }
